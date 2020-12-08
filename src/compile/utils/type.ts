@@ -23,7 +23,9 @@ export const getIdentifierText = (identifier: ts.Identifier) => identifier.escap
 
 export const getRealValueFromDeclaration = (declaration: ts.Declaration) => {
   if (ts.isPropertyAssignment(declaration)) {
-    return declaration.initializer.getText();
+    if (ts.isStringLiteral(declaration.initializer)) {
+      return text2String(declaration.initializer);
+    }
   }
 };
 
@@ -36,4 +38,12 @@ export const getDeclarations = (node: ts.Node, checker: ts.TypeChecker) => {
   const type = checker.getTypeAtLocation(node);
   const symbol = type.symbol || type.aliasSymbol;
   return symbol.getDeclarations() as ts.Declaration[];
+};
+
+/**
+ * remove the `'` or `"` from StringLiteral
+ * @param node
+ */
+export const text2String = (node: ts.StringLiteral) => {
+  return node.getText().replace(/\"/g, '').replace(/\'/g, '');
 };

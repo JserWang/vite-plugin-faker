@@ -7,6 +7,7 @@ import {
   getIdentifierText,
   getRealValueFromDeclaration,
   getSourceFiles,
+  text2String,
 } from './utils/type';
 
 const root = process.cwd();
@@ -106,7 +107,7 @@ export default (opts: Options) => {
       }
     } else if (ts.isStringLiteral(node)) {
       // assign value via string, such as `/user/info`
-      return node.getText();
+      return text2String(node);
     } else if (ts.isArrayTypeNode(node)) {
       // array directly takes the actual type
       return walk(node.elementType);
