@@ -2,14 +2,8 @@
 
 ## Development
 
-in one terminal tab run:
+clone the code and just run
 
 ```bash
 yarn dev
-```
-
-then in other one terminal tab run:
-
-```bash
-yarn watch
 ```
