@@ -1,5 +1,6 @@
 import faker from 'faker';
 import ts from 'typescript';
+import type { Options } from '../types';
 import { getFilesFromPathByRule, isMatched, joinPath, resolvePath } from './utils/tool';
 import {
   getCompilerOptions,
@@ -79,11 +80,16 @@ export default (opts: Options) => {
    */
   const walk = (node: ts.Node): any => {
     if (ts.isClassDeclaration(node)) {
-      // only process files that meet the inclusion rules
-      if (node.name && isMatched(getIdentifierText(node.name), opts.includes)) {
-        // each property in the class
-        node.members.forEach(walk);
+      if (!node.name) {
+        return;
       }
+      const className = getIdentifierText(node.name);
+      // only process files that meet the inclusion rules and the exclusion rules
+      if (!isMatched(className, opts.includes) && isMatched(className, opts.excludes)) {
+        return;
+      }
+      // each property in the class
+      node.members.forEach(walk);
     } else if (ts.isMethodDeclaration(node)) {
       // method body
       node.body?.forEachChild(walk);
