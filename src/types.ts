@@ -1,22 +1,41 @@
 export interface Options {
   /**
-   * 基础解析路径
+   * basic path
    */
   basePath: string;
   /**
-   * 是否生成 mock 文件
+   * whether to generate mock file
    */
   mockFile?: boolean;
   /**
-   * 是否监听文件变化
+   * judge request parameters
+   */
+  validParamter?: boolean;
+  /**
+   * monitor file changes
    */
   watchFile?: boolean;
   /**
-   * 解析 class 名字的规则
+   * rules for parsing class names
    */
   includes?: RegExp | RegExp[];
   /**
-   * 解析 class 名字的排除规则
+   * exclusion rules for parsing class names
    */
   excludes?: RegExp | RegExp[];
+}
+
+export interface MockData<T> {
+  /**
+   * http status code
+   */
+  httpCode?: number;
+  /**
+   * delay time
+   */
+  timeout?: number;
+  /**
+   * response body
+   */
+  response: T;
 }
