@@ -1,9 +1,17 @@
-import { existsSync } from 'fs';
 import ts from 'typescript';
 
+const getTsConfig = (configPath: string) => {
+  const readResult = ts.readConfigFile(configPath, ts.sys.readFile);
+  if (readResult.error) {
+    console.error(readResult.error);
+  }
+  return readResult.config;
+};
+
 export const getCompilerOptions = (configPath: string): ts.CompilerOptions => {
-  if (existsSync(configPath)) {
-    return ts.convertCompilerOptionsFromJson(require(configPath), './').options;
+  const config = getTsConfig(configPath);
+  if (config) {
+    return ts.convertCompilerOptionsFromJson(config.compilerOptions, './').options;
   }
   return {
     module: ts.ModuleKind.ES2015,
