@@ -25,7 +25,8 @@ export interface Options {
   excludes?: RegExp | RegExp[];
 }
 
-export interface MockData<T> {
+export interface MockData {
+  url: string;
   /**
    * http status code
    */
@@ -37,5 +38,5 @@ export interface MockData<T> {
   /**
    * response body
    */
-  response: T;
+  response: Record<string, any>;
 }

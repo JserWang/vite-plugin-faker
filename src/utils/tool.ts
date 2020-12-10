@@ -23,3 +23,10 @@ export const isMatched = (target: string, reg?: RegExp | RegExp[]): boolean => {
     return reg.test(target);
   }
 };
+
+export const sleep = (delay: number) =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
