@@ -15,8 +15,10 @@ const processPropertyAccessExpression = (node: ts.PropertyAccessExpression): str
   const symbol = checker.getSymbolAtLocation(node);
   if (symbol) {
     const declaration = symbol.valueDeclaration;
-    if (ts.isPropertyAssignment(declaration) && ts.isStringLiteral(declaration.initializer)) {
-      return processStringLiteral(declaration.initializer);
+    if (ts.isPropertyAssignment(declaration) || ts.isEnumMember(declaration)) {
+      if (declaration.initializer && ts.isStringLiteral(declaration.initializer)) {
+        return processStringLiteral(declaration.initializer);
+      }
     }
   }
   return '';
