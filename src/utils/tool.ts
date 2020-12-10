@@ -27,6 +27,6 @@ export const isMatched = (target: string, reg?: RegExp | RegExp[]): boolean => {
 export const sleep = (delay: number) =>
   new Promise((resolve) => {
     setTimeout(() => {
-      resolve();
+      resolve(null);
     }, delay);
   });
