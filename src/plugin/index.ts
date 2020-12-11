@@ -17,7 +17,6 @@ const getMockData = async (opts: Options) => {
 
   if (!mockData || (mockData && mockData.length === 0)) {
     const compileResult = compile(basePath, opts);
-    // console.log(compileResult);
     mockData = generateMockData(compileResult);
     opts.mockFile && generateMockFile(basePath, mockData);
   }
