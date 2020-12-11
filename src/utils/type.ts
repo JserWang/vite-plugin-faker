@@ -35,9 +35,9 @@ export const getIdentifierText = (identifier: ts.Identifier | undefined): string
   identifier ? identifier.escapedText.toString() : '';
 
 /**
- * Get text from StringLiteral and remove the `'` or `"`
- * @param node
+ * remove the `'` or `"`
+ * @param value
  */
-export const toString = (node: ts.StringLiteral) => {
-  return node.getText().replace(/\"/g, '').replace(/\'/g, '');
+export const toString = (value: string) => {
+  return value.replace(/\"/g, '').replace(/\'/g, '');
 };

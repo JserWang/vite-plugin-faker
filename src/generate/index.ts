@@ -1,6 +1,7 @@
 import faker from 'faker';
 import { ExpressionEntry } from '../compile/expression';
 import { MockData } from '../types';
+import { toString } from '../utils/type';
 
 const getValueFromObject = (obj: Record<string, any>): Record<string, any> => {
   let result = {} as Record<string, any>;
@@ -29,7 +30,7 @@ const generateBasicTypeValue = (valueType: string): string | number | string[] |
     case 'number[]':
       return [faker.random.number()];
     default:
-      return '';
+      return toString(valueType);
   }
 };
 

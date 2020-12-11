@@ -9,7 +9,7 @@ export interface ExpressionEntry {
   responseBody: Record<string, any>;
 }
 
-const processStringLiteral = (node: ts.StringLiteral): string => toString(node);
+const processStringLiteral = (node: ts.StringLiteral): string => toString(node.getText());
 
 const processPropertyAccessExpression = (node: ts.PropertyAccessExpression): string => {
   const symbol = checker.getSymbolAtLocation(node);
