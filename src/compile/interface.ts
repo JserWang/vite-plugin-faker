@@ -100,6 +100,9 @@ export const processTypeReferenceNode = (
   const declaration = getDeclaration(node);
   if (ts.isInterfaceDeclaration(declaration)) {
     return serialize(declaration);
+  } else if (ts.isTypeParameterDeclaration(declaration)) {
+    // process like T = any
+    return getIdentifierText(declaration.name);
   }
 
   return declaration.getText();
