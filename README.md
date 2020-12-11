@@ -34,12 +34,12 @@ If `mockFile` is `false`, the plugin will compile the `includes` files to mock d
 
 ## TODO
 
-[x] Generate mock file
+- [x] Generate mock file
 
-[x] Load mock data from mock file
+- [x] Load mock data from mock file
 
-[] Compare mock file with compile result and regenerate new mock file
+- [ ] Compare mock file with compile result and regenerate new mock file
 
-[] Watch the includes file change and recompile mock data
+- [ ] Watch the includes file change and recompile mock data
 
-[] Watch the mock file change
+- [ ] Watch the mock file change
