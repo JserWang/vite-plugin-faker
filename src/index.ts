@@ -1,12 +1,19 @@
 import { Plugin } from 'vite';
 import compile from './compile';
 import generateMockData from './generate';
+import generateMockFile from './generate/file';
 import createServerPlugin from './plugin';
 import { Options } from './types';
+import { joinPath } from './utils/tool';
+
+const root = process.cwd();
 
 export const createMockServer = (opts: Options): Plugin => {
-  const compileResult = compile(opts);
+  const basePath = joinPath(root, opts.basePath);
+  const compileResult = compile(basePath, opts);
   const mockData = generateMockData(compileResult);
+
+  opts.mockFile && generateMockFile(basePath, mockData);
 
   return {
     configureServer: createServerPlugin(opts, mockData),

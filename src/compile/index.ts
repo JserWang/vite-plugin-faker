@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import type { Options } from '../types';
-import { getFilesFromPathByRule, isMatched, joinPath, resolvePath } from '../utils/tool';
+import { getFilesFromPathByRule, isMatched, resolvePath } from '../utils/tool';
 import { getCompilerOptions, getSourceFiles } from '../utils/type';
 import serializeClass from './class';
 import serializeExpression, { ExpressionEntry } from './expression';
@@ -10,10 +10,10 @@ const root = process.cwd();
 
 const TS_CONFIG_NAME = 'tsconfig.json';
 
-export default (opts: Options) => {
-  const targetPath = joinPath(root, opts.basePath);
-  const files = getFilesFromPathByRule('**/*.ts', targetPath);
-  const compilerOptions = getCompilerOptions(resolvePath(root, TS_CONFIG_NAME));
+export default (path: string, opts: Options) => {
+  const files = getFilesFromPathByRule('**/*.ts', path);
+  const configPath = resolvePath(root, TS_CONFIG_NAME);
+  const compilerOptions = getCompilerOptions(configPath);
   const { sourceFiles, checker } = getSourceFiles(files, compilerOptions);
   const result = [] as ExpressionEntry[];
 
