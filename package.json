@@ -29,7 +29,10 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "faker": "^5.1.0",
-    "glob": "^7.1.6"
+    "glob": "^7.1.6",
+    "rollup": "^2.32.1",
+    "rollup-plugin-esbuild": "^2.5.2",
+    "@rollup/plugin-node-resolve": "^9.0.0"
   },
   "devDependencies": {
     "@types/faker": "^5.1.5",
