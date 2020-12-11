@@ -1,10 +1,7 @@
 import fs from 'fs';
+import { MOCK_DIR, MOCK_FILE_NAME } from '../constants';
 import { MockData } from '../types';
 import { resolvePath } from '../utils/tool';
-
-const MOCK_DIR = 'mock';
-
-const MOCK_FILE_NAME = 'mock.ts';
 
 const getTemplate = (mockData: MockData[]) => `
 import { MockData } from 'vite-plugin-faker';
