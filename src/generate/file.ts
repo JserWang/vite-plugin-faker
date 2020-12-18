@@ -15,9 +15,5 @@ export default (path: string, mockData: MockData[]) => {
   if (!fs.existsSync(mockDir)) {
     fs.mkdirSync(mockDir);
   }
-  if (!fs.existsSync(mockFile)) {
-    fs.writeFileSync(mockFile, getTemplate(mockData));
-  } else {
-    // TODO: compare exists file and regenerate differences
-  }
+  fs.writeFileSync(mockFile, getTemplate(mockData));
 };

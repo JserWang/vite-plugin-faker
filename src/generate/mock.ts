@@ -1,7 +1,7 @@
 import faker from 'faker';
-import { ExpressionEntry } from '../compile/expression';
+import { ExpressionEntry } from '../compiler/expression';
 import { MockData } from '../types';
-import { toString } from '../utils/type';
+import { toString } from '../utils/types';
 
 const getValueFromObject = (obj: Record<string, any>): Record<string, any> => {
   let result = {} as Record<string, any>;

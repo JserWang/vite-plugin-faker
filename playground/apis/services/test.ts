@@ -12,7 +12,9 @@ class PlayGroundService {
   };
 
   normal(phone: string) {
-    return Request.get<MResult>(this.api.normal, { phone });
+    return Request.get<MResult>(this.api.normal, { phone }).then((resp) => {
+      // resp.number
+    });
   }
 
   array() {

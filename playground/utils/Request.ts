@@ -5,9 +5,16 @@ interface ResponseData<T> {
 }
 
 class Request {
-  get<T>(url: string, params?: Record<string, any>, opts?: Record<string, any>) {
-    return new Promise<ResponseData<T>>((resolve) => {
-      resolve();
+  get<T>(url: string, opts?: Record<string, any>) {
+    return this.fetch<T>({
+      method: 'get',
+      ...opts,
+    });
+  }
+
+  fetch<T, R = ResponseData<T>>(opts: Record<string, any>) {
+    return new Promise<T>((resolve) => {
+      resolve({} as T);
     });
   }
 }

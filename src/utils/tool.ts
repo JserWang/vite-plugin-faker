@@ -13,15 +13,15 @@ export const getFilesFromPathByRule = (rule: string, path: string) => {
     .map((file) => resolve(path, file));
 };
 
-export const isMatched = (target: string, reg?: RegExp | RegExp[]): boolean => {
-  if (!reg) {
-    return true;
-  }
+export const isMatched = (target: string, reg?: RegExp | RegExp[], required?: boolean): boolean => {
   if (Array.isArray(reg)) {
-    return reg.some((item) => item.test(target));
-  } else {
+    if (reg.length > 0) {
+      return reg.some((item) => item.test(target));
+    }
+  } else if (reg) {
     return reg.test(target);
   }
+  return false;
 };
 
 export const sleep = (delay: number) =>

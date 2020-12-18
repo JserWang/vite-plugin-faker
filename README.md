@@ -13,13 +13,15 @@ yarn add vite-plugin-faker
 in `vite-config-ts`
 
 ```typescript
-import { createMockServer } from 'vite-plugin-faker';
+import { vitePluginFaker } from 'vite-plugin-faker';
 
 plugin: {
-  createMockServer({
+  vitePluginFaker({
     basePath: 'src/apis',
     includes: [/^.*Service/],
     excludes: [],
+    watchFile: true,
+    mockFile: true,
   });
 }
 ```
@@ -32,14 +34,6 @@ If `mockFile` is `true`, the plugin will generate mock file to `basePath`.If the
 
 If `mockFile` is `false`, the plugin will compile the `includes` files to mock data at runtime.
 
-## TODO
+### watchFile
 
-- [x] Generate mock file
-
-- [x] Load mock data from mock file
-
-- [ ] Compare mock file with compile result and regenerate new mock file
-
-- [ ] Watch the includes file change and recompile mock data
-
-- [ ] Watch the mock file change
+If `watchFile` is `true`, the plugin will watch the specified files, when they change, the mock file and mock data will be updated automatically.
