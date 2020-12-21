@@ -1,3 +1,4 @@
+import { existsSync } from 'fs';
 import watch from 'node-watch';
 import { compileClass, compileMockFile } from '../compiler';
 import { MOCK_DIR, MOCK_FILE_NAME, ROOT } from '../constants';
@@ -44,26 +45,20 @@ export class MockDataResolver {
   }
 
   watchMockFile() {
-    if (!this.opts.watchFile) {
+    if (!existsSync(this.opts.basePath) || !this.opts.watchFile) {
       return;
     }
-    let processing = false;
     watch(this.filePath, (event) => {
       if (event === 'update') {
-        if (processing) {
-          return;
-        }
-        processing = true;
         logInfo('The mock file changed, update the response mock data');
         const mockData = this.getDataFromMockFile();
         eventHub.pub('UPDATE_MOCK_DATA', mockData);
-        processing = false;
       }
     });
   }
 
   watchRequestFile() {
-    if (!this.opts.watchFile) {
+    if (!existsSync(this.opts.basePath) || !this.opts.watchFile) {
       return;
     }
     watch(
