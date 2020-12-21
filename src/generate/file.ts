@@ -1,19 +1,10 @@
-import fs from 'fs';
 import { MOCK_DIR, MOCK_FILE_NAME } from '../constants';
 import { MockData } from '../types';
-import { resolvePath } from '../utils/tool';
+import { resolvePath, writeFile } from '../utils';
 
-const getTemplate = (mockData: MockData[]) => `
-import { MockData } from 'vite-plugin-faker';
-
-export default ${JSON.stringify(mockData, null, 2)} as MockData[];
-`;
-
-export default (path: string, mockData: MockData[]) => {
-  const mockDir = resolvePath(path, MOCK_DIR);
-  const mockFile = resolvePath(mockDir, MOCK_FILE_NAME);
-  if (!fs.existsSync(mockDir)) {
-    fs.mkdirSync(mockDir);
-  }
-  fs.writeFileSync(mockFile, getTemplate(mockData));
+export const generateMockJson = (basePath: string, data: MockData[]) => {
+  const path = resolvePath(basePath, MOCK_DIR, MOCK_FILE_NAME);
+  writeFile(path, formatJson(data));
 };
+
+const formatJson = (data: any): string => JSON.stringify(data, null, 2);

@@ -1,10 +1,11 @@
 import { existsSync } from 'fs';
 import watch from 'node-watch';
-import { compileClass, compileMockFile } from '../compiler';
+import { compileClass } from '../compiler';
 import { MOCK_DIR, MOCK_FILE_NAME, ROOT } from '../constants';
-import generateMockFile from '../generate/file';
+import { generateMockJson } from '../generate/file';
 import generateMockData from '../generate/mock';
 import { MockData, Options } from '../types';
+import { readFile } from '../utils';
 import eventHub from '../utils/eventHub';
 import { logInfo } from '../utils/log';
 import { getFilesFromPathByRule, joinPath } from '../utils/tool';
@@ -30,8 +31,8 @@ export class MockDataResolver {
     return mockData;
   }
 
-  getDataFromMockFile() {
-    return compileMockFile(this.filePath);
+  getDataFromMockFile(): MockData[] {
+    return JSON.parse(readFile(this.filePath) || '[]');
   }
 
   getDataFromClassCompiler() {
@@ -41,7 +42,7 @@ export class MockDataResolver {
   }
 
   generate(mockData: MockData[]) {
-    this.opts.mockFile && generateMockFile(joinPath(ROOT, this.opts.basePath), mockData);
+    this.opts.mockFile && generateMockJson(joinPath(ROOT, this.opts.basePath), mockData);
   }
 
   watchMockFile() {

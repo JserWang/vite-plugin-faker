@@ -8,4 +8,4 @@ export const TS_CONFIG_NAME = 'tsconfig.json';
 export const MOCK_DIR = 'mock';
 
 // mock 文件名
-export const MOCK_FILE_NAME = 'mock.ts';
+export const MOCK_FILE_NAME = 'mock.json';
