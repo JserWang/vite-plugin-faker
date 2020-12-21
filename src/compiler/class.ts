@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { getIdentifierText } from '../utils/types';
+import { getIdentifierText } from '../utils';
 
 /**
  * Get class name

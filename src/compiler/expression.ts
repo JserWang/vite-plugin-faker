@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { getIdentifierText, getStringLiteralValue, processTypeReferenceNode } from '../utils/types';
+import { getIdentifierText, getStringLiteralValue, processTypeReferenceNode } from '../utils';
 import { InterfaceEntry } from './interface';
 import { getCallExpressionsFromMethod } from './method';
 

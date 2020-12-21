@@ -9,3 +9,6 @@ export const MOCK_DIR = 'mock';
 
 // mock 文件名
 export const MOCK_FILE_NAME = 'mock.json';
+
+// mock结构 文件名
+export const MOCK_STRUCTURE = 'structure.json';

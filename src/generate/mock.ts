@@ -1,7 +1,7 @@
 import faker from 'faker';
 import { ExpressionEntry } from '../compiler/expression';
 import { MockData } from '../types';
-import { toString } from '../utils/types';
+import { toString } from '../utils';
 
 const getValueFromObject = (obj: Record<string, any>): Record<string, any> => {
   let result = {} as Record<string, any>;
@@ -34,8 +34,21 @@ const generateBasicTypeValue = (valueType: string): string | number | string[] |
   }
 };
 
-export default (entry: ExpressionEntry[]): MockData[] =>
-  entry.map((item) => ({
-    url: item.url,
-    response: getValueFromObject(item.responseBody),
-  }));
+const isDifferent = (key: string, array: string[]) => array.indexOf(key) !== -1;
+
+export const generateMockData = (
+  entry: ExpressionEntry[],
+  originDataMap: Map<string, MockData>,
+  diffArr: string[]
+): MockData[] => {
+  return entry.map(({ url, responseBody }) => {
+    if (diffArr.length > 0 && !isDifferent(url, diffArr)) {
+      return originDataMap.get(url) as MockData;
+    } else {
+      return {
+        url,
+        response: getValueFromObject(responseBody),
+      };
+    }
+  });
+};

@@ -32,3 +32,14 @@ export const readFile = (path: string): string => {
   }
   return readFileSync(path).toString();
 };
+
+const formatJson = (data: any): string => JSON.stringify(data, null, 2);
+
+/**
+ * 生成JSON文件
+ * @param path
+ * @param data
+ */
+export const createJsonFile = (path: string, data: any) => {
+  writeFile(path, formatJson(data));
+};

@@ -2,9 +2,7 @@ import type { ParameterizedContext } from 'koa';
 import type { ServerPluginContext } from 'vite';
 import { MockDataResolver } from '../resolver/mockData';
 import type { MockData, Options } from '../types';
-import eventHub from '../utils/eventHub';
-import { logInfo } from '../utils/log';
-import { sleep } from '../utils/tool';
+import { eventHub, logInfo, sleep } from '../utils';
 
 let mockData: MockData[];
 const getMockData = async (opts: Options) => {

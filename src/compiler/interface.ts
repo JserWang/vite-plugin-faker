@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { getIdentifierText, processTypeReferenceNode } from '../utils/types';
+import { getIdentifierText, processTypeReferenceNode } from '../utils';
 
 interface IProperty {
   key: string;

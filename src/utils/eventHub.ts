@@ -21,4 +21,4 @@ class EventHub {
   }
 }
 
-export default new EventHub();
+export const eventHub = new EventHub();
