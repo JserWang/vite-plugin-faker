@@ -80,7 +80,10 @@ const processPropertyAccessExpression = (
  * @param responseBody
  * @param generic
  */
-const getResponseBody = (responseBody: InterfaceEntry, generic: InterfaceEntry) => {
+const getResponseBody = (
+  responseBody: InterfaceEntry,
+  generic: InterfaceEntry | InterfaceEntry[]
+) => {
   if (responseBody.properties) {
     const bodyProperties = responseBody.properties;
     Object.keys(bodyProperties).forEach((key) => {
@@ -142,13 +145,12 @@ const getCustomResponseInterface = (
 const getTypeArgumentInterface = (
   node: ts.CallExpression,
   checker: ts.TypeChecker
-): InterfaceEntry => {
+): InterfaceEntry | InterfaceEntry[] => {
   const typeArgument = node.typeArguments![0];
   if (ts.isTypeReferenceNode(typeArgument)) {
-    const res = processTypeReferenceNode(typeArgument, checker);
-    if (typeof res !== 'string') {
-      return res;
-    }
+    return processTypeReferenceNode(typeArgument, checker) as InterfaceEntry;
+  } else if (ts.isArrayTypeNode(typeArgument)) {
+    return [processTypeReferenceNode(typeArgument.elementType, checker) as InterfaceEntry];
   }
   return {};
 };
@@ -157,7 +159,12 @@ const getTypeArgumentInterface = (
  * interface 格式化
  * @param entry
  */
-const formatInterface = (entry: InterfaceEntry) => {
+const formatInterface = (
+  entry: InterfaceEntry | InterfaceEntry[]
+): Record<string, any> | Record<string, any>[] => {
+  if (Array.isArray(entry)) {
+    return [formatInterface(entry[0])];
+  }
   const result = {} as Record<string, any>;
   const properties = entry.properties;
   if (properties) {
