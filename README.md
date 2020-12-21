@@ -5,7 +5,7 @@
 1. installation
 
 ```bash
-yarn add vite-plugin-faker
+yarn add -D vite-plugin-faker
 ```
 
 2. configuration
