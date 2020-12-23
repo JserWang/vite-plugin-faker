@@ -69,3 +69,20 @@ yarn dev
 -`watchFile`: Whether to monitor file changes, when it is true, mock data will be automatically updated when the file changes
 
 -`mockFile`: Whether to generate a mock file, usually set to true when a special return value is required
+
+## 📛 Mock.json extra fields
+
+You can customize your request in the generated mock.json
+
+```json
+{
+  // Interface response time
+  "timeout": 200,
+  // The corresponding Http status code of the interface
+  "httpCode": 401
+}
+```
+
+## 📁 Workflow
+
+![workflow](./workflow.png)

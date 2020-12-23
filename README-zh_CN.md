@@ -65,3 +65,20 @@ yarn dev
 - `watchFile`：是否监听文件变更，当为 true 时，文件发生变化时会自动更新 mock 数据
 
 - `mockFile`：是否生成 mock 文件，通常用于需要特殊返回值时设为 true
+
+## 📛 Mock.json 额外字段
+
+你可以在生成的 mock.json 来定制化你的请求
+
+```json
+{
+  // 接口响应时间
+  "timeout": 200,
+  // 接口相应Http状态码
+  "httpCode": 401
+}
+```
+
+## 📁 工作流
+
+![工作流](./workflow-zh_CN.png)
