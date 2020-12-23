@@ -24,16 +24,65 @@ const getTargetNodeByKind = (
   return result;
 };
 
-test('serialize normal interface', () => {
-  const filePath = resolvePath(process.cwd(), 'playground', 'apis', 'models', 'user.ts');
+const testSerializeInterface = (filePath: string, expected: Record<string, any>) => {
   const { sourceFiles, checker } = getSourceFiles([filePath], configResolver.getCompilerOptions());
   const node = getTargetNodeByKind(sourceFiles, ts.SyntaxKind.InterfaceDeclaration);
+
   if (node) {
     const result = serializeInterface(node as ts.InterfaceDeclaration, checker);
-    expect(result).toEqual({
-      name: 'MUser',
-      generics: [],
-      properties: { name: 'string', age: 'number' },
-    });
+    expect(result).toEqual(expected);
   }
+};
+
+test('serialize basic interface', () => {
+  const filePath = resolvePath(process.cwd(), 'playground', 'apis', 'models', 'basic.ts');
+  const expected = {
+    name: 'MBasic',
+    generics: [],
+    properties: { name: 'string', age: 'number' },
+  };
+
+  testSerializeInterface(filePath, expected);
+});
+
+test('serialize interface with extends', () => {
+  const filePath = resolvePath(process.cwd(), 'playground', 'apis', 'models', 'extend.ts');
+  const expected = {
+    name: 'MSquare',
+    generics: [],
+    extends: ['MShape'],
+    properties: { color: 'string', sideLength: 'number' },
+  };
+
+  testSerializeInterface(filePath, expected);
+});
+
+test('serialize interface with generic', () => {
+  const filePath = resolvePath(process.cwd(), 'playground', 'apis', 'models', 'generic.ts');
+  const expected = {
+    name: 'MCustomResponse',
+    generics: ['T'],
+    properties: { code: 'number', msg: 'string', data: 'T' },
+  };
+
+  testSerializeInterface(filePath, expected);
+});
+
+test('serialize interface with typeReference', () => {
+  const filePath = resolvePath(process.cwd(), 'playground', 'apis', 'models', 'reference.ts');
+  const expected = {
+    name: 'MParent',
+    generics: [],
+    properties: {
+      children: [
+        {
+          name: 'MChild',
+          generics: [],
+          properties: { name: 'string', age: 'number' },
+        },
+      ],
+    },
+  };
+
+  testSerializeInterface(filePath, expected);
 });

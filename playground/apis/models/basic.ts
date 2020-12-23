@@ -1,4 +1,4 @@
-interface MUser {
+interface MBasic {
   name: string;
   age: number;
 }
