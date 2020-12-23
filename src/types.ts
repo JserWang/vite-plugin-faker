@@ -8,10 +8,6 @@ export interface Options {
    */
   mockFile?: boolean;
   /**
-   * judge request parameters
-   */
-  validParamter?: boolean;
-  /**
    * monitor file changes
    */
   watchFile?: boolean;

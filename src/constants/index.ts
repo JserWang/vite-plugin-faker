@@ -1,14 +1,14 @@
-// 根目录
+// root path
 export const ROOT = process.cwd();
 
-// ts配置文件名
+// typescript config file name
 export const TS_CONFIG_NAME = 'tsconfig.json';
 
-// mock 文件路径
+// mock directory name
 export const MOCK_DIR = 'mock';
 
-// mock 文件名
-export const MOCK_FILE_NAME = 'mock.json';
+// mock data file name
+export const MOCK_DATA_FILE = 'mock.json';
 
-// mock结构 文件名
-export const MOCK_STRUCTURE = 'structure.json';
+// mock structure json file name
+export const MOCK_STRUCTURE_FILE = 'structure.json';

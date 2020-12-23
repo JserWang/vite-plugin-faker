@@ -10,7 +10,7 @@ export const getSourceFiles = (files: string[], opts: ts.CompilerOptions) => {
 };
 
 /**
- * 获取Identifier中escapedText值
+ * Get the value of escapedText in Identifier
  * @param identifier
  */
 export const getIdentifierText = (identifier: ts.Identifier | undefined): string =>
@@ -25,13 +25,13 @@ export const toString = (value: string) => {
 };
 
 /**
- * 得到StringLiteral实际值
+ * Get the actual value of StringLiteral
  * @param node
  */
 export const getStringLiteralValue = (node: ts.StringLiteral): string => toString(node.getText());
 
 /**
- * 序列化TypeReference
+ * TypeReference to interface or generic string
  * @param node
  * @param checker
  */

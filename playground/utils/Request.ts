@@ -8,6 +8,15 @@ class Request {
   get<T>(url: string, opts?: Record<string, any>) {
     return this.fetch<T>({
       method: 'get',
+      url: `${url}?_t=${Date.now()}`,
+      ...opts,
+    });
+  }
+
+  post<T>(url: string, opts?: Record<string, any>) {
+    return this.fetch<T>({
+      method: 'post',
+      url,
       ...opts,
     });
   }

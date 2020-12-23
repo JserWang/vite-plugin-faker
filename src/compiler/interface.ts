@@ -14,7 +14,7 @@ export interface InterfaceEntry {
 }
 
 /**
- * 处理 interface 中泛型
+ * Get generic types in interface
  * @param paramDecls
  */
 const analysisGeneric = (
@@ -27,7 +27,7 @@ const analysisGeneric = (
 };
 
 /**
- * 处理 interface 中定义属性
+ * Get members in interface
  * @param members
  */
 const analysisMembers = (members: ts.NodeArray<ts.TypeElement>, checker: ts.TypeChecker) => {
@@ -42,8 +42,8 @@ const analysisMembers = (members: ts.NodeArray<ts.TypeElement>, checker: ts.Type
 };
 
 /**
- * 序列化每条属性以及属性对应类型
- * 当属性类型为其他interface时，再次调用interface的serialize
+ * Serialize each attribute and its corresponding type
+ * When the attribute type is other interface, call serializeInterface again
  * @param signature
  */
 const serializeProperty = (signature: ts.PropertySignature, checker: ts.TypeChecker): IProperty => {
@@ -70,7 +70,7 @@ const serializeProperty = (signature: ts.PropertySignature, checker: ts.TypeChec
 };
 
 /**
- * 处理extends情况
+ * process interface extends case
  * @param nodeArray
  */
 const serializeHeritageClause = (
@@ -96,7 +96,7 @@ const serializeHeritageClause = (
 };
 
 /**
- * 序列化interface
+ * serialize interface
  * @param node
  */
 export const serializeInterface = (
@@ -111,8 +111,8 @@ export const serializeInterface = (
     properties: analysisMembers(node.members, checker),
   };
 
-  // 处理interface中extends，因为interface中没有implements关键字，所以这里当存在heritageClauses时，
-  // 直接使用取第一个即为extends
+  // Process the extends in the interface, because there is no implements keyword in the interface, so here when there is heritageClauses,
+  // Use the first one directly to be extends
   if (node.heritageClauses) {
     const { names, properties } = serializeHeritageClause(node.heritageClauses[0].types, checker);
     entry.extends = names;

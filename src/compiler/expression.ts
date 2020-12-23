@@ -23,7 +23,7 @@ export interface ExpressionEntry {
 }
 
 /**
- * 序列化request CallExpression
+ * Serialize request CallExpression
  * @param node
  */
 export const serializeExpression = (
@@ -42,17 +42,17 @@ export const serializeExpression = (
 };
 
 /**
- * 通过request 第一个参数得到url值
+ * Get the url value through the first parameter of request
  * @param node
  * @param checker
  */
 const getUrlFromArguments = (node: ts.CallExpression, checker: ts.TypeChecker): string => {
   const urlExpression = node.arguments[0];
-  // 通过引用赋值
+  // Assign value via property
   if (ts.isPropertyAccessExpression(urlExpression)) {
     return processPropertyAccessExpression(urlExpression, checker);
   } else if (ts.isStringLiteral(urlExpression)) {
-    // 直接字符串赋值
+    // Assign value via string
     return getStringLiteralValue(urlExpression);
   }
   return '';
@@ -76,7 +76,7 @@ const processPropertyAccessExpression = (
 };
 
 /**
- * 获得response body
+ * Assemble the response body
  * @param responseBody
  * @param generic
  */
@@ -97,31 +97,31 @@ const getResponseBody = (
 };
 
 /**
- * 得到CustomResponse对应Interface
+ * Get CustomResponse corresponding to Interface
  * @param node
  */
 const getCustomResponseInterface = (
   node: ts.CallExpression,
   checker: ts.TypeChecker
 ): InterfaceEntry => {
-  // 得到request中method对应的symbol
+  // Get the symbol corresponding to the method in the request
   const symbol = checker.getSymbolAtLocation(node.expression);
   if (!symbol) {
     return {};
   }
-  // 得到symbol中valueDeclaration
+  // Get the valueDeclaration in the symbol
   const valueDeclaration = symbol.valueDeclaration;
   if (!ts.isMethodDeclaration(valueDeclaration)) {
     return {};
   }
-  // 得到method中的return fetch()部分
+  // Get the return fetch() part of the method
   const expression = getCallExpressionsFromMethod(valueDeclaration)[0];
   if (!ts.isCallExpression(expression)) {
     return {};
   }
-  // 得到fetch方法的Signature
+  // Get the signature of the fetch method
   const signature = checker.getResolvedSignature(expression);
-  // 拿到fetch的declaration
+  // Get the fetch declaration
   const declaration = signature?.getDeclaration();
   if (
     declaration &&
@@ -129,7 +129,7 @@ const getCustomResponseInterface = (
       ts.isArrowFunction(declaration) ||
       ts.isFunctionDeclaration(declaration))
   ) {
-    // 得到fetch中第二个TypeParamter中的 R = ResponseBody<T>
+    // Get R = ResponseBody<T> in the second TypeParamter in fetch
     const responseBody = declaration.typeParameters![1].default;
     if (responseBody) {
       return processTypeReferenceNode(responseBody, checker) as InterfaceEntry;
@@ -139,7 +139,7 @@ const getCustomResponseInterface = (
 };
 
 /**
- * 得到Request中泛型对应Interface
+ * Get the generic corresponding Interface in Request
  * @param node
  */
 const getTypeArgumentInterface = (
@@ -150,13 +150,14 @@ const getTypeArgumentInterface = (
   if (ts.isTypeReferenceNode(typeArgument)) {
     return processTypeReferenceNode(typeArgument, checker) as InterfaceEntry;
   } else if (ts.isArrayTypeNode(typeArgument)) {
+    // just like MUser[]
     return [processTypeReferenceNode(typeArgument.elementType, checker) as InterfaceEntry];
   }
   return {};
 };
 
 /**
- * interface 格式化
+ * Format interface to Record
  * @param entry
  */
 const formatInterface = (
@@ -182,7 +183,7 @@ const formatInterface = (
 };
 
 /**
- * 通过methods判断CallExpression是否为Request请求
+ * Determine whether CallExpression is a Request by METHODS
  * @param node
  */
 export const isRequestExpression = (node: ts.CallExpression): boolean => {
@@ -191,10 +192,10 @@ export const isRequestExpression = (node: ts.CallExpression): boolean => {
 };
 
 /**
- * 递归找到AST中叶子节点的CallExpression
+ * Recursively find the CallExpression of the leaf node in the AST
  *
- * 例如：
- * Request.get().then().then() 的AST结构对应关系：
+ * such as:
+ * The AST structure correspondence of `Request.get().then().then()`:
  *
  * CallExpression -- Request.get().then().then()
  *  PropertyAccessExpression

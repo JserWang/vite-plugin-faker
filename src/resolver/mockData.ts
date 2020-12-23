@@ -4,8 +4,8 @@ import isEqual from 'lodash.isequal';
 import watch from 'node-watch';
 import { compileClass } from '../compiler';
 import { ExpressionEntry } from '../compiler/expression';
-import { MOCK_DIR, MOCK_FILE_NAME, MOCK_STRUCTURE, ROOT } from '../constants';
-import { generateMockData } from '../generate/mock';
+import { MOCK_DATA_FILE, MOCK_DIR, MOCK_STRUCTURE_FILE, ROOT } from '../constants';
+import { generateMockData } from '../generator/mock';
 import { MockData, Options } from '../types';
 import {
   createJsonFile,
@@ -25,8 +25,8 @@ export class MockDataResolver {
 
   constructor(opts: Options) {
     const mockDir = joinPath(ROOT, opts.basePath, MOCK_DIR);
-    this.mockFilePath = joinPath(mockDir, MOCK_FILE_NAME);
-    this.mockStructurePath = joinPath(mockDir, MOCK_STRUCTURE);
+    this.mockFilePath = joinPath(mockDir, MOCK_DATA_FILE);
+    this.mockStructurePath = joinPath(mockDir, MOCK_STRUCTURE_FILE);
     this.opts = opts;
 
     this.originMockData = this.getDataFromMockFile();
@@ -67,7 +67,7 @@ export class MockDataResolver {
   }
 
   /**
-   * 从指定文件通过ast获取结构
+   * Get structure from specified file through ast
    */
   getStructureFromFiles(): ExpressionEntry[] {
     const files = getFilesFromPathByRule('**/*.ts', joinPath(ROOT, this.opts.basePath));
@@ -75,7 +75,7 @@ export class MockDataResolver {
   }
 
   /**
-   * 从structure.json中获取结构
+   * Get the structure from structure.json
    */
   getStructureFromJson(): ExpressionEntry[] {
     return JSON.parse(readFile(this.mockStructurePath) || '[]');
@@ -103,22 +103,31 @@ export class MockDataResolver {
       path,
       {
         recursive: true,
-        // ignore mock json file
+        // ignore mock data and mock structure files
         filter: (fileName) => {
-          return fileName.indexOf(MOCK_FILE_NAME) === -1 || fileName.indexOf(MOCK_STRUCTURE) === -1;
+          return (
+            fileName.indexOf(MOCK_DATA_FILE) === -1 || fileName.indexOf(MOCK_STRUCTURE_FILE) === -1
+          );
         },
       },
       (event) => {
         if (event === 'update') {
           const structure = this.getStructureFromFiles();
-          const diff = this.compareAndReplaceStructure(this.originStructure, structure);
-          if (diff.length === 0) {
+          const differences = this.getStructureDifferences(this.originStructure, structure);
+          if (differences.length === 0) {
             return;
           }
           logInfo(
-            `Different data are monitored: '${chalk.red(diff.join(','))}', regenerate mock file`
+            `Different structures are monitored: '${chalk.red(
+              differences.join(',')
+            )}', regenerate mock file`
           );
-          const mockData = generateMockData(structure, mockData2Map(this.originMockData), diff);
+
+          const mockData = generateMockData(
+            structure,
+            mockData2Map(this.originMockData),
+            differences
+          );
 
           this.originMockData = mockData;
           this.originStructure = structure;
@@ -134,22 +143,27 @@ export class MockDataResolver {
     );
   }
 
-  compareAndReplaceStructure(originStructure: ExpressionEntry[], structure: ExpressionEntry[]) {
+  /**
+   * Get the difference in two structures
+   * @param originStructure
+   * @param structure
+   */
+  getStructureDifferences(originStructure: ExpressionEntry[], structure: ExpressionEntry[]) {
     const originMap = expressionArray2Map(originStructure);
     const currentMap = expressionArray2Map(structure);
 
-    const diff = new Array<string>();
+    const differences = new Array<string>();
     currentMap.forEach((value, key) => {
       if (originMap.has(key)) {
         if (!isEqual(originMap.get(key), currentMap.get(key))) {
-          diff.push(key);
+          differences.push(key);
         }
       } else {
-        // 当原始结构中不存在，则证明新增，直接添加
-        diff.push(key);
+        // When it does not exist in the original structure, it is proved to be newly added and directly added
+        differences.push(key);
       }
     });
-    return diff;
+    return differences;
   }
 }
 

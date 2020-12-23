@@ -4,7 +4,7 @@
 import ts from 'typescript';
 
 /**
- * 获得method中的所有CallExpression
+ * Get all CallExpression in method
  * @param node
  */
 export const getCallExpressionsFromMethod = (node: ts.MethodDeclaration): ts.CallExpression[] => {
@@ -18,7 +18,7 @@ export const getCallExpressionsFromMethod = (node: ts.MethodDeclaration): ts.Cal
 };
 
 /**
- * 处理block中的statement
+ * Process block in statement
  * @param block
  */
 const processBlock = (block: ts.Block): ts.Expression[] => {
@@ -30,7 +30,7 @@ const processBlock = (block: ts.Block): ts.Expression[] => {
 };
 
 /**
- * 处理statement，得到其中包含的ExpressionStatement以及ReturnStatement
+ * Get the ExpressionStatement and ReturnStatement in statement
  * @param statement
  */
 const processStatement = (statement: ts.Statement): ts.Expression | ts.Expression[] => {
@@ -43,23 +43,24 @@ const processStatement = (statement: ts.Statement): ts.Expression | ts.Expressio
 };
 
 /**
- * 处理ifStatement
+ * Process ifStatement
  * @param statement
  */
 const processIfStatement = (statement: ts.IfStatement) => {
   let expressions = new Array<ts.Expression>();
-  // 处理if中block中包含的expression
+  // Process the expression contained in the block in the if
   if (ts.isBlock(statement.thenStatement)) {
     expressions = mergeExpressions(expressions, processBlock(statement.thenStatement));
   }
 
-  // 当存在else时，注意：当存在`else if`时这里的elseStatement可能还会包含ifStatement
+  // When there is else
+  // NOTE: when there is `else if`, the elseStatement here may also contain ifStatement
   if (statement.elseStatement) {
     if (ts.isIfStatement(statement.elseStatement)) {
-      // 处理 else if
+      // Process else if
       expressions = mergeExpressions(expressions, processIfStatement(statement.elseStatement));
     } else if (ts.isBlock(statement.elseStatement)) {
-      // 处理 else
+      // Process else
       expressions = mergeExpressions(expressions, processBlock(statement.elseStatement));
     }
   }
@@ -67,7 +68,7 @@ const processIfStatement = (statement: ts.IfStatement) => {
 };
 
 /**
- * 将expression合并，返回一个新的expression集合
+ * Merge the expressions to a new array
  * @param target1
  * @param target2
  */

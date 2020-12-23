@@ -13,22 +13,22 @@ export const compileClass = (files: string[], opts: Options) => {
   const { sourceFiles, checker } = getSourceFiles(files, configResolver.getCompilerOptions());
   let result = new Array<ExpressionEntry>();
 
-  const visit = (node: ts.Node): any => {
+  const visit = (node: ts.Node) => {
     if (ts.isClassDeclaration(node)) {
       const className = getClassName(node);
-      // 根据includes和excludes得到符合条件的class
+      // According to includes and excludes to get qualified class
       if (!isMatched(className, opts.includes) || isMatched(className, opts.excludes)) {
-        return null;
+        return;
       }
 
       const methods = getClassMethods(node);
-      // get all expression in method
+      // Get all expression in method
       let expressions = [] as ts.CallExpression[];
       methods.forEach((method) => {
         expressions = expressions.concat(getCallExpressionsFromMethod(method));
       });
 
-      // 获得为Request的Expression
+      // Get request expressions
       expressions = expressions.filter((exp) => isRequestExpression(exp));
 
       result = expressions.map((expression) => serializeExpression(expression, checker));

@@ -39,10 +39,11 @@ const isDifferent = (key: string, array: string[]) => array.indexOf(key) !== -1;
 export const generateMockData = (
   entry: ExpressionEntry[],
   originDataMap: Map<string, MockData>,
-  diffArr: string[]
+  differences: string[]
 ): MockData[] => {
   return entry.map(({ url, responseBody }) => {
-    if (diffArr.length > 0 && !isDifferent(url, diffArr)) {
+    // When there is no change, take the original value directly
+    if (differences.length > 0 && !isDifferent(url, differences)) {
       return originDataMap.get(url) as MockData;
     } else {
       return {

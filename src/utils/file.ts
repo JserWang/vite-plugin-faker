@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { parse } from 'path';
 
 /**
- * 目录不存在则创建
+ * Create if the directory does not exist
  * @param dir
  */
 export const dirExistsOrCreate = (dir: string) => {
@@ -12,20 +12,11 @@ export const dirExistsOrCreate = (dir: string) => {
   }
 };
 
-/**
- * 写文件
- * @param path
- * @param data
- */
 export const writeFile = (path: string, data: string) => {
   dirExistsOrCreate(path);
   writeFileSync(path, data);
 };
 
-/**
- * 读取文件
- * @param path
- */
 export const readFile = (path: string): string => {
   if (!existsSync(path)) {
     return '';
@@ -35,11 +26,6 @@ export const readFile = (path: string): string => {
 
 const formatJson = (data: any): string => JSON.stringify(data, null, 2);
 
-/**
- * 生成JSON文件
- * @param path
- * @param data
- */
 export const createJsonFile = (path: string, data: any) => {
   writeFile(path, formatJson(data));
 };
