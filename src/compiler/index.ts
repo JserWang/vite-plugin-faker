@@ -23,7 +23,7 @@ export const compileClass = (files: string[], opts: Options) => {
 
       const methods = getClassMethods(node);
       // Get all expression in method
-      let expressions = [] as ts.CallExpression[];
+      let expressions = new Array<ts.CallExpression>();
       methods.forEach((method) => {
         expressions = expressions.concat(getCallExpressionsFromMethod(method));
       });
