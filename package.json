@@ -1,11 +1,10 @@
 {
   "name": "vite-plugin-faker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A mock plugin for vite",
   "main": "dist/index.js",
   "files": [
-    "dist",
-    "es"
+    "dist"
   ],
   "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node playground/main.ts",
