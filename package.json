@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node playground/main.ts",
     "build": "rimraf dist && rimraf es && tsc -p tsconfig.json",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "keywords": [
     "vite",
