@@ -82,10 +82,26 @@ describe('serialize interface', () => {
     testSerializeInterface(sourceFiles, checker, 'MCustomResponse', expected);
   });
 
-  test('interface with typeReference', () => {
+  test('PropertySignature.type is typeReference', () => {
     const expected = {
       name: 'MParent',
       properties: {
+        child: {
+          name: 'MChild',
+          properties: { name: 'string', age: 'number' },
+        },
+      },
+    };
+
+    testSerializeInterface(sourceFiles, checker, 'MParent', expected);
+  });
+
+  test('PropertySignature.type is ArrayType', () => {
+    const expected = {
+      name: 'MArrayType',
+      properties: {
+        stringArr: 'string[]',
+        numberArr: 'number[]',
         children: [
           {
             name: 'MChild',
@@ -95,7 +111,7 @@ describe('serialize interface', () => {
       },
     };
 
-    testSerializeInterface(sourceFiles, checker, 'MParent', expected);
+    testSerializeInterface(sourceFiles, checker, 'MArrayType', expected);
   });
 
   test('PropertySignature.type is undefined', () => {
@@ -107,7 +123,7 @@ describe('serialize interface', () => {
     testSerializeInterface(sourceFiles, checker, 'MEmpty', expected);
   });
 
-  test('PropertySignature.type is MLiteralType', () => {
+  test('PropertySignature.type is LiteralType', () => {
     const expected = {
       name: 'MLiteralType',
       properties: { name: 'JserWang', age: 18 },

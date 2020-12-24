@@ -12,15 +12,6 @@ interface MSquare extends MShape {
   sideLength: number;
 }
 
-// test for typeReference
-interface MChild {
-  name: string;
-  age: number;
-}
-interface MParent {
-  children: MChild[];
-}
-
 // test for generic
 interface MCustomResponse<T = any> {
   code: number;
@@ -28,12 +19,28 @@ interface MCustomResponse<T = any> {
   data: T;
 }
 
+// test for PropertySignature.type is typeReference
+interface MChild {
+  name: string;
+  age: number;
+}
+interface MParent {
+  child: MChild;
+}
+
+// test for PropertySignature.type is ArrayType
+interface MArrayType {
+  stringArr: string[];
+  numberArr: number[];
+  children: MChild[];
+}
+
 // test for PropertySignature.type is undefined
 interface MEmpty {
   empty;
 }
 
-// test for MLiteralType
+// test for PropertySignature.type is LiteralType
 interface MLiteralType {
   name: 'JserWang';
   age: 18;
