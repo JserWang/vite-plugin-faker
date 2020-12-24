@@ -17,14 +17,8 @@ export interface InterfaceEntry {
  * Get generic types in interface
  * @param paramDecls
  */
-const analysisGeneric = (
-  paramDecls: ts.NodeArray<ts.TypeParameterDeclaration> | undefined
-): string[] => {
-  if (paramDecls) {
-    return paramDecls.map((decl) => getIdentifierText(decl.name));
-  }
-  return [];
-};
+const analysisGeneric = (paramDecls: ts.NodeArray<ts.TypeParameterDeclaration>): string[] =>
+  paramDecls.map((decl) => getIdentifierText(decl.name));
 
 /**
  * Get members in interface
@@ -52,7 +46,7 @@ const serializeProperty = (signature: ts.PropertySignature, checker: ts.TypeChec
     return { key: '', value: '' };
   }
 
-  let value: string | InterfaceEntry | (string | InterfaceEntry)[];
+  let value: string | number | InterfaceEntry | (string | number | InterfaceEntry)[];
   if (ts.isTypeReferenceNode(typeNode)) {
     value = processTypeReferenceNode(typeNode, checker);
   } else if (ts.isArrayTypeNode(typeNode) && ts.isTypeReferenceNode(typeNode.elementType)) {
@@ -60,6 +54,9 @@ const serializeProperty = (signature: ts.PropertySignature, checker: ts.TypeChec
       | InterfaceEntry
       | string
     )[];
+  } else if (ts.isLiteralTypeNode(typeNode)) {
+    const type = checker.getTypeAtLocation(typeNode);
+    value = type.isStringLiteral() || type.isNumberLiteral() ? type.value : typeNode.getText();
   } else {
     value = typeNode.getText();
   }
@@ -107,9 +104,12 @@ export const serializeInterface = (
 
   const entry: InterfaceEntry = {
     name,
-    generics: analysisGeneric(node.typeParameters),
     properties: analysisMembers(node.members, checker),
   };
+
+  if (node.typeParameters) {
+    entry.generics = analysisGeneric(node.typeParameters);
+  }
 
   // Process the extends in the interface, because there is no implements keyword in the interface, so here when there is heritageClauses,
   // Use the first one directly to be extends

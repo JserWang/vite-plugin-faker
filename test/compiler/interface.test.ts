@@ -110,7 +110,7 @@ describe('serialize interface', () => {
   test('PropertySignature.type is MLiteralType', () => {
     const expected = {
       name: 'MLiteralType',
-      properties: { name: 'JserWang' },
+      properties: { name: 'JserWang', age: 18 },
     };
 
     testSerializeInterface(sourceFiles, checker, 'MLiteralType', expected);

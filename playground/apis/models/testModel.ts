@@ -36,4 +36,5 @@ interface MEmpty {
 // test for MLiteralType
 interface MLiteralType {
   name: 'JserWang';
+  age: 18;
 }
