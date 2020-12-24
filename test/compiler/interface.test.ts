@@ -1,55 +1,39 @@
 import ts from 'typescript';
 import { serializeInterface } from '../../src/compiler/interface';
-import { ROOT, TS_CONFIG_NAME } from '../../src/constants';
-import { TsConfigResolver } from '../../src/resolver/config';
-import {
-  getFilesFromPathByRule,
-  getIdentifierText,
-  getSourceFiles,
-  resolvePath,
-} from '../../src/utils';
+import { getIdentifierText } from '../../src/utils';
+import { getBindingResult, getTargetNodesByKind } from '../../src/utils/testUtils';
 
-const getTargetNodeByKind = (
-  sourceFiles: readonly ts.SourceFile[],
+const getTargetNodeByName = (
+  nodes: ts.InterfaceDeclaration[],
   nodeName: string
-): ts.Node | null => {
-  let result = null;
-  sourceFiles.forEach((sourceFile) => {
-    if (sourceFile.isDeclarationFile) {
-      return;
-    }
-    sourceFile.forEachChild((node: ts.Node) => {
-      if (ts.isInterfaceDeclaration(node) && getIdentifierText(node.name) === nodeName) {
-        result = node;
-      }
-    });
-  });
-  return result;
+): ts.InterfaceDeclaration | null => {
+  const targetNodes = nodes.filter((node) => getIdentifierText(node.name) === nodeName);
+  return targetNodes.length > 0 ? targetNodes[0] : null;
 };
 
 const testSerializeInterface = (
-  sourceFiles: readonly ts.SourceFile[],
+  nodes: ts.InterfaceDeclaration[],
   checker: ts.TypeChecker,
   nodeName: string,
   expected: Record<string, any>
 ) => {
-  const node = getTargetNodeByKind(sourceFiles, nodeName);
+  const node = getTargetNodeByName(nodes, nodeName);
 
   if (node) {
-    const result = serializeInterface(node as ts.InterfaceDeclaration, checker);
+    const result = serializeInterface(node, checker);
     expect(result).toEqual(expected);
   }
 };
 
 describe('serialize interface', () => {
-  let sourceFiles: readonly ts.SourceFile[];
+  let interfaces: ts.InterfaceDeclaration[];
   let checker: ts.TypeChecker;
   beforeAll(() => {
-    const configResolver = new TsConfigResolver(resolvePath(ROOT, TS_CONFIG_NAME));
-    const interfacePath = resolvePath(process.cwd(), 'playground', 'apis', 'models');
-    const files = getFilesFromPathByRule('**/*.ts', interfacePath);
-    const bindingResult = getSourceFiles(files, configResolver.getCompilerOptions());
-    sourceFiles = bindingResult.sourceFiles;
+    const bindingResult = getBindingResult('models');
+    interfaces = getTargetNodesByKind(
+      bindingResult.sourceFiles,
+      ts.SyntaxKind.InterfaceDeclaration
+    ) as ts.InterfaceDeclaration[];
     checker = bindingResult.checker;
   });
 
@@ -59,7 +43,7 @@ describe('serialize interface', () => {
       properties: { name: 'string', age: 'number' },
     };
 
-    testSerializeInterface(sourceFiles, checker, 'MBasic', expected);
+    testSerializeInterface(interfaces, checker, 'MBasic', expected);
   });
 
   test('interface with extends', () => {
@@ -69,7 +53,7 @@ describe('serialize interface', () => {
       properties: { color: 'string', sideLength: 'number' },
     };
 
-    testSerializeInterface(sourceFiles, checker, 'MSquare', expected);
+    testSerializeInterface(interfaces, checker, 'MSquare', expected);
   });
 
   test('interface with generic', () => {
@@ -79,7 +63,7 @@ describe('serialize interface', () => {
       properties: { code: 'number', msg: 'string', data: 'T' },
     };
 
-    testSerializeInterface(sourceFiles, checker, 'MCustomResponse', expected);
+    testSerializeInterface(interfaces, checker, 'MCustomResponse', expected);
   });
 
   test('PropertySignature.type is typeReference', () => {
@@ -93,7 +77,7 @@ describe('serialize interface', () => {
       },
     };
 
-    testSerializeInterface(sourceFiles, checker, 'MParent', expected);
+    testSerializeInterface(interfaces, checker, 'MParent', expected);
   });
 
   test('PropertySignature.type is ArrayType', () => {
@@ -111,7 +95,7 @@ describe('serialize interface', () => {
       },
     };
 
-    testSerializeInterface(sourceFiles, checker, 'MArrayType', expected);
+    testSerializeInterface(interfaces, checker, 'MArrayType', expected);
   });
 
   test('PropertySignature.type is undefined', () => {
@@ -120,7 +104,7 @@ describe('serialize interface', () => {
       properties: { '': '' },
     };
 
-    testSerializeInterface(sourceFiles, checker, 'MEmpty', expected);
+    testSerializeInterface(interfaces, checker, 'MEmpty', expected);
   });
 
   test('PropertySignature.type is LiteralType', () => {
@@ -129,6 +113,6 @@ describe('serialize interface', () => {
       properties: { name: 'JserWang', age: 18 },
     };
 
-    testSerializeInterface(sourceFiles, checker, 'MLiteralType', expected);
+    testSerializeInterface(interfaces, checker, 'MLiteralType', expected);
   });
 });
