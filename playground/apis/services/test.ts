@@ -34,6 +34,14 @@ class PlayGroundService {
     return Request.get<MResult>('/user/string');
   }
 
+  basicType() {
+    return Request.get<string>('/user/basicType');
+  }
+
+  basicArrayType() {
+    return Request.get<string[]>('/user/basicTypeArr');
+  }
+
   withIf() {
     if (1 === 1) {
       Request.get<MResult>(this.api.withIf);

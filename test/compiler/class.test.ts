@@ -24,7 +24,7 @@ describe('class', () => {
 
   test('class name', () => {
     const expected = 'PlayGroundService';
-    const node = getTargetNodeByKind(classes, expected);
+    const node = getTargetNodeByKind(classes, 'PlayGroundService');
     if (node) {
       expect(getClassName(node)).toBe(expected);
     }

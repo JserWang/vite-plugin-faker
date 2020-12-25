@@ -13,6 +13,8 @@ export interface ExpressionEntry {
   responseBody: Record<string, any>;
 }
 
+declare type ResponseDataType = InterfaceEntry | InterfaceEntry[] | string;
+
 /**
  * Serialize request CallExpression
  * @param node
@@ -75,18 +77,12 @@ const processPropertyAccessExpression = (
  * @param responseBody
  * @param generic
  */
-const getResponseBody = (
-  responseBody: InterfaceEntry,
-  generic: InterfaceEntry | InterfaceEntry[]
-) => {
+const getResponseBody = (responseBody: InterfaceEntry, generic: ResponseDataType) => {
   transformResponseBody(responseBody, generic);
   return formatInterface(responseBody);
 };
 
-const transformResponseBody = (
-  responseBody: InterfaceEntry,
-  generic: InterfaceEntry | InterfaceEntry[]
-) => {
+const transformResponseBody = (responseBody: InterfaceEntry, generic: ResponseDataType) => {
   responseBody.properties = responseBody.properties?.map((item) => {
     if (
       item.kind === ts.SyntaxKind.TypeReference &&
@@ -113,7 +109,7 @@ const formatInterface = (entry: InterfaceEntry | InterfaceEntry[]): Record<strin
       formatted[key] = `${value}[]`;
     } else if (ts.SyntaxKind.ArrayType === kind) {
       formatted[key] = [formatInterface(value)];
-    } else if (ts.SyntaxKind.TypeReference === kind) {
+    } else if (ts.SyntaxKind.TypeReference === kind && typeof value !== 'string') {
       formatted[key] = formatInterface(value);
     } else {
       formatted[key] = value;
@@ -171,13 +167,14 @@ const getCustomResponseInterface = (
 const getTypeArgumentInterface = (
   node: ts.CallExpression,
   checker: ts.TypeChecker
-): InterfaceEntry | InterfaceEntry[] => {
+): ResponseDataType => {
   const typeArgument = node.typeArguments![0];
   if (ts.isTypeReferenceNode(typeArgument)) {
     return processTypeReferenceNode(typeArgument, checker) as InterfaceEntry;
-  } else if (ts.isArrayTypeNode(typeArgument)) {
+  } else if (ts.isArrayTypeNode(typeArgument) && ts.isTypeReferenceNode(typeArgument.elementType)) {
     // just like <MResult[]>
     return [processTypeReferenceNode(typeArgument.elementType, checker) as InterfaceEntry];
   }
-  return {};
+  // <string> || <string[]>
+  return typeArgument.getText();
 };

@@ -305,4 +305,36 @@ describe('expressions', () => {
       );
     }
   });
+
+  test('basicType', () => {
+    const method = getTargetMethod(entries, 'basicType');
+    if (method) {
+      const expected = {
+        url: '/user/basicType',
+        responseBody: {
+          code: 'number',
+          msg: 'string',
+          data: 'string',
+        },
+      };
+
+      expect(serializeExpression(method.expressions[0], checker)).toEqual(expected);
+    }
+  });
+
+  test('basicArrayType', () => {
+    const method = getTargetMethod(entries, 'basicArrayType');
+    if (method) {
+      const expected = {
+        url: '/user/basicTypeArr',
+        responseBody: {
+          code: 'number',
+          msg: 'string',
+          data: 'string[]',
+        },
+      };
+
+      expect(serializeExpression(method.expressions[0], checker)).toEqual(expected);
+    }
+  });
 });
