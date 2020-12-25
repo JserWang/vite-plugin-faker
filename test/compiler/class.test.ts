@@ -1,7 +1,5 @@
 import ts from 'typescript';
 import { getClassMethods, getClassName } from '../../src/compiler/class';
-import { isRequestExpression } from '../../src/compiler/expression';
-import { getCallExpressionsFromMethod } from '../../src/compiler/method';
 import { getIdentifierText } from '../../src/utils';
 import { getBindingResult, getTargetNodesByKind } from '../../src/utils/testUtils';
 
@@ -38,34 +36,6 @@ describe('class', () => {
       const methods = getClassMethods(node);
       methods.forEach((item) => {
         expect(item.kind).toEqual(ts.SyntaxKind.MethodDeclaration);
-      });
-      expect(methods).toHaveLength(6);
-    }
-  });
-
-  test('filter PlayGroundService requestExpression', () => {
-    const node = getTargetNodeByKind(classes, 'PlayGroundService');
-    if (node) {
-      const methods = getClassMethods(node);
-      let expressions = new Array<ts.CallExpression>();
-      methods.forEach((method) => {
-        expressions = expressions.concat(getCallExpressionsFromMethod(method));
-      });
-      expressions = expressions.filter((exp) => isRequestExpression(exp));
-
-      expect(expressions).toHaveLength(7);
-    }
-  });
-
-  test('PlayGroundService getApi is not RequestExpression', () => {
-    const node = getTargetNodeByKind(classes, 'PlayGroundService');
-    if (node) {
-      const methods = getClassMethods(node);
-      methods.forEach((item) => {
-        if (ts.isIdentifier(item.name) && getIdentifierText(item.name) === 'getApi') {
-          const expressions = getCallExpressionsFromMethod(item);
-          expect(isRequestExpression(expressions[0])).toBe(false);
-        }
       });
     }
   });

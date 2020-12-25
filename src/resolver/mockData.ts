@@ -71,7 +71,9 @@ export class MockDataResolver {
    */
   getStructureFromFiles(): ExpressionEntry[] {
     const files = getFilesFromPathByRule('**/*.ts', joinPath(ROOT, this.opts.basePath));
-    return compileClass(files, this.opts);
+    const structure = compileClass(files, this.opts);
+    // filter if item is null
+    return structure.filter((item) => !!item) as ExpressionEntry[];
   }
 
   /**

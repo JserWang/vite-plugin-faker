@@ -2,16 +2,16 @@ import ts from 'typescript';
 import { ROOT, TS_CONFIG_NAME } from '../constants';
 import { TsConfigResolver } from '../resolver/config';
 import type { Options } from '../types';
-import { getSourceFiles, isMatched, resolvePath } from '../utils';
+import { getSourceFiles, isMatched, isRequestExpression, resolvePath } from '../utils';
 import { getClassMethods, getClassName } from './class';
-import { ExpressionEntry, isRequestExpression, serializeExpression } from './expression';
-import { getCallExpressionsFromMethod } from './method';
+import { ExpressionEntry, serializeExpression } from './expression';
+import { getMethodEntry } from './method';
 
 const configResolver = new TsConfigResolver(resolvePath(ROOT, TS_CONFIG_NAME));
 
 export const compileClass = (files: string[], opts: Options) => {
   const { sourceFiles, checker } = getSourceFiles(files, configResolver.getCompilerOptions());
-  let result = new Array<ExpressionEntry>();
+  let result = new Array<ExpressionEntry | null>();
 
   const visit = (node: ts.Node) => {
     if (ts.isClassDeclaration(node)) {
@@ -25,7 +25,7 @@ export const compileClass = (files: string[], opts: Options) => {
       // Get all expression in method
       let expressions = new Array<ts.CallExpression>();
       methods.forEach((method) => {
-        expressions = expressions.concat(getCallExpressionsFromMethod(method));
+        expressions = expressions.concat(getMethodEntry(method).expressions);
       });
 
       // Get request expressions

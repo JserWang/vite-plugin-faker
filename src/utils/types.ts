@@ -1,5 +1,6 @@
 import ts from 'typescript';
 import { InterfaceEntry, serializeInterface } from '../compiler/interface';
+import { METHODS } from '../constants';
 
 export const getSourceFiles = (files: string[], opts: ts.CompilerOptions) => {
   const program = ts.createProgram(files, opts);
@@ -55,4 +56,48 @@ const getDeclaration = (node: ts.Node, checker: ts.TypeChecker) => {
   const symbol = type.symbol || type.aliasSymbol;
   const declarations = symbol?.getDeclarations() as ts.Declaration[];
   return declarations![0];
+};
+
+/**
+ * Determine whether CallExpression is a Request by METHODS
+ * @param node
+ */
+export const isRequestExpression = (node: ts.CallExpression): boolean => {
+  const targetNode = getLeafCallExpression(node);
+  return METHODS.indexOf(getExpressionName(targetNode)) !== -1;
+};
+
+/**
+ * Recursively find the CallExpression of the leaf node in the AST
+ *
+ * such as:
+ * The AST structure correspondence of `Request.get().then().then()`:
+ *
+ * CallExpression -- Request.get().then().then()
+ *  PropertyAccessExpression
+ *    CallExpression -- Request.get().then()
+ *      PropertyAccessExpression
+ *        CallExpression -- Request.get()
+ *          PropertyAccessExpression
+ *          TypeReference
+ *
+ * @param node
+ */
+export const getLeafCallExpression = (node: ts.CallExpression): ts.CallExpression => {
+  const nodeExpression = node.expression;
+  if (
+    ts.isPropertyAccessExpression(nodeExpression) &&
+    ts.isCallExpression(nodeExpression.expression)
+  ) {
+    return getLeafCallExpression(nodeExpression.expression);
+  }
+  return node;
+};
+
+const getExpressionName = (node: ts.CallExpression): string => {
+  const expression = node.expression;
+  if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name)) {
+    return getIdentifierText(expression.name).toLocaleLowerCase();
+  }
+  return '';
 };

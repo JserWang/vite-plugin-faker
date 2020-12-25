@@ -9,7 +9,7 @@ class EventHub {
 
   pub(eventName: string, ...args: any) {
     const events = this.list[eventName];
-    events.forEach((cb) => {
+    (events || []).forEach((cb) => {
       cb(...args);
     });
   }

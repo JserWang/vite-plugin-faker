@@ -1,21 +1,12 @@
 import ts from 'typescript';
-import { getIdentifierText, getStringLiteralValue, processTypeReferenceNode } from '../utils';
+import {
+  getLeafCallExpression,
+  getStringLiteralValue,
+  logError,
+  processTypeReferenceNode,
+} from '../utils';
 import { InterfaceEntry } from './interface';
-import { getCallExpressionsFromMethod } from './method';
-
-const METHODS = [
-  'get',
-  'post',
-  'upload',
-  'put',
-  'delete',
-  'patch',
-  'purge',
-  'link',
-  'unlink',
-  'options',
-  'head',
-];
+import { getMethodEntry } from './method';
 
 export interface ExpressionEntry {
   url: string;
@@ -29,10 +20,14 @@ export interface ExpressionEntry {
 export const serializeExpression = (
   node: ts.CallExpression,
   checker: ts.TypeChecker
-): ExpressionEntry => {
+): ExpressionEntry | null => {
   const targetNode = getLeafCallExpression(node);
   const url = getUrlFromArguments(targetNode, checker);
   const customResponseInterface = getCustomResponseInterface(targetNode, checker);
+  if (!customResponseInterface) {
+    logError(`url: ${url}, can not find customResponseBody`);
+    return null;
+  }
   const typeArgumentInterface = getTypeArgumentInterface(targetNode, checker);
 
   return {
@@ -48,8 +43,8 @@ export const serializeExpression = (
  */
 const getUrlFromArguments = (node: ts.CallExpression, checker: ts.TypeChecker): string => {
   const urlExpression = node.arguments[0];
-  // Assign value via property
   if (ts.isPropertyAccessExpression(urlExpression)) {
+    // Assign value via property
     return processPropertyAccessExpression(urlExpression, checker);
   } else if (ts.isStringLiteral(urlExpression)) {
     // Assign value via string
@@ -84,16 +79,47 @@ const getResponseBody = (
   responseBody: InterfaceEntry,
   generic: InterfaceEntry | InterfaceEntry[]
 ) => {
-  if (responseBody.properties) {
-    const bodyProperties = responseBody.properties;
-    Object.keys(bodyProperties).forEach((key) => {
-      if (responseBody.generics?.indexOf(bodyProperties[key]) !== -1) {
-        bodyProperties[key] = formatInterface(generic);
-      }
-    });
-    return bodyProperties;
+  transformResponseBody(responseBody, generic);
+  return formatInterface(responseBody);
+};
+
+const transformResponseBody = (
+  responseBody: InterfaceEntry,
+  generic: InterfaceEntry | InterfaceEntry[]
+) => {
+  responseBody.properties = responseBody.properties?.map((item) => {
+    if (
+      item.kind === ts.SyntaxKind.TypeReference &&
+      responseBody.generics?.indexOf(item.value) !== -1
+    ) {
+      item.value = generic;
+    }
+    return item;
+  });
+};
+
+/**
+ * Format interface to Record
+ * @param entry
+ */
+const formatInterface = (entry: InterfaceEntry | InterfaceEntry[]): Record<string, any> => {
+  // process <MResult[]>
+  if (Array.isArray(entry)) {
+    return [formatInterface(entry[0])];
   }
-  return generic;
+  let formatted = {} as Record<string, any>;
+  entry.properties?.forEach(({ key, kind, value }) => {
+    if (ts.SyntaxKind.ArrayType === kind && typeof value === 'string') {
+      formatted[key] = `${value}[]`;
+    } else if (ts.SyntaxKind.ArrayType === kind) {
+      formatted[key] = [formatInterface(value)];
+    } else if (ts.SyntaxKind.TypeReference === kind) {
+      formatted[key] = formatInterface(value);
+    } else {
+      formatted[key] = value;
+    }
+  });
+  return formatted;
 };
 
 /**
@@ -103,21 +129,21 @@ const getResponseBody = (
 const getCustomResponseInterface = (
   node: ts.CallExpression,
   checker: ts.TypeChecker
-): InterfaceEntry => {
+): InterfaceEntry | null => {
   // Get the symbol corresponding to the method in the request
   const symbol = checker.getSymbolAtLocation(node.expression);
   if (!symbol) {
-    return {};
+    return null;
   }
   // Get the valueDeclaration in the symbol
   const valueDeclaration = symbol.valueDeclaration;
   if (!ts.isMethodDeclaration(valueDeclaration)) {
-    return {};
+    return null;
   }
   // Get the return fetch() part of the method
-  const expression = getCallExpressionsFromMethod(valueDeclaration)[0];
+  const expression = getMethodEntry(valueDeclaration).expressions[0];
   if (!ts.isCallExpression(expression)) {
-    return {};
+    return null;
   }
   // Get the signature of the fetch method
   const signature = checker.getResolvedSignature(expression);
@@ -135,7 +161,7 @@ const getCustomResponseInterface = (
       return processTypeReferenceNode(responseBody, checker) as InterfaceEntry;
     }
   }
-  return {};
+  return null;
 };
 
 /**
@@ -150,78 +176,8 @@ const getTypeArgumentInterface = (
   if (ts.isTypeReferenceNode(typeArgument)) {
     return processTypeReferenceNode(typeArgument, checker) as InterfaceEntry;
   } else if (ts.isArrayTypeNode(typeArgument)) {
-    // just like MUser[]
+    // just like <MResult[]>
     return [processTypeReferenceNode(typeArgument.elementType, checker) as InterfaceEntry];
   }
   return {};
-};
-
-/**
- * Format interface to Record
- * @param entry
- */
-const formatInterface = (
-  entry: InterfaceEntry | InterfaceEntry[]
-): Record<string, any> | Record<string, any>[] => {
-  if (Array.isArray(entry)) {
-    return [formatInterface(entry[0])];
-  }
-  const result = {} as Record<string, any>;
-  const properties = entry.properties;
-  if (properties) {
-    Object.keys(properties).forEach((key) => {
-      let value = properties[key];
-      if (Array.isArray(value)) {
-        value = [formatInterface(value[0])];
-      } else if (typeof value === 'object') {
-        value = formatInterface(value);
-      }
-      result[key] = value;
-    });
-  }
-  return result;
-};
-
-/**
- * Determine whether CallExpression is a Request by METHODS
- * @param node
- */
-export const isRequestExpression = (node: ts.CallExpression): boolean => {
-  const targetNode = getLeafCallExpression(node);
-  return METHODS.indexOf(getExpressionName(targetNode)) !== -1;
-};
-
-/**
- * Recursively find the CallExpression of the leaf node in the AST
- *
- * such as:
- * The AST structure correspondence of `Request.get().then().then()`:
- *
- * CallExpression -- Request.get().then().then()
- *  PropertyAccessExpression
- *    CallExpression -- Request.get().then()
- *      PropertyAccessExpression
- *        CallExpression -- Request.get()
- *          PropertyAccessExpression
- *          TypeReference
- *
- * @param node
- */
-const getLeafCallExpression = (node: ts.CallExpression): ts.CallExpression => {
-  const nodeExpression = node.expression;
-  if (
-    ts.isPropertyAccessExpression(nodeExpression) &&
-    ts.isCallExpression(nodeExpression.expression)
-  ) {
-    return getLeafCallExpression(nodeExpression.expression);
-  }
-  return node;
-};
-
-const getExpressionName = (node: ts.CallExpression): string => {
-  const expression = node.expression;
-  if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name)) {
-    return getIdentifierText(expression.name);
-  }
-  return '';
 };

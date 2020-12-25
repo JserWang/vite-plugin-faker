@@ -1,5 +1,6 @@
 import ts from 'typescript';
 import { serializeInterface } from '../../src/compiler/interface';
+import { INDEXABLE_TYPE } from '../../src/constants';
 import { getIdentifierText } from '../../src/utils';
 import { getBindingResult, getTargetNodesByKind } from '../../src/utils/testUtils';
 
@@ -40,7 +41,11 @@ describe('serialize interface', () => {
   test('basic interface', () => {
     const expected = {
       name: 'MBasic',
-      properties: { name: 'string', age: 'number' },
+      properties: [
+        { key: 'name', kind: ts.SyntaxKind.StringKeyword, value: 'string' },
+        { key: 'age', kind: ts.SyntaxKind.NumberKeyword, value: 'number' },
+        { key: INDEXABLE_TYPE, kind: ts.SyntaxKind.AnyKeyword, value: 'any' },
+      ],
     };
 
     testSerializeInterface(interfaces, checker, 'MBasic', expected);
@@ -50,7 +55,10 @@ describe('serialize interface', () => {
     const expected = {
       name: 'MSquare',
       extends: ['MShape'],
-      properties: { color: 'string', sideLength: 'number' },
+      properties: [
+        { key: 'color', kind: ts.SyntaxKind.StringKeyword, value: 'string' },
+        { key: 'sideLength', kind: ts.SyntaxKind.NumberKeyword, value: 'number' },
+      ],
     };
 
     testSerializeInterface(interfaces, checker, 'MSquare', expected);
@@ -60,7 +68,11 @@ describe('serialize interface', () => {
     const expected = {
       name: 'MCustomResponse',
       generics: ['T'],
-      properties: { code: 'number', msg: 'string', data: 'T' },
+      properties: [
+        { key: 'code', kind: ts.SyntaxKind.NumberKeyword, value: 'number' },
+        { key: 'msg', kind: ts.SyntaxKind.StringKeyword, value: 'string' },
+        { key: 'data', kind: ts.SyntaxKind.TypeReference, value: 'T' },
+      ],
     };
 
     testSerializeInterface(interfaces, checker, 'MCustomResponse', expected);
@@ -69,12 +81,19 @@ describe('serialize interface', () => {
   test('PropertySignature.type is typeReference', () => {
     const expected = {
       name: 'MParent',
-      properties: {
-        child: {
-          name: 'MChild',
-          properties: { name: 'string', age: 'number' },
+      properties: [
+        {
+          key: 'child',
+          kind: ts.SyntaxKind.TypeReference,
+          value: {
+            name: 'MChild',
+            properties: [
+              { key: 'name', kind: ts.SyntaxKind.StringKeyword, value: 'string' },
+              { key: 'age', kind: ts.SyntaxKind.NumberKeyword, value: 'number' },
+            ],
+          },
         },
-      },
+      ],
     };
 
     testSerializeInterface(interfaces, checker, 'MParent', expected);
@@ -83,16 +102,21 @@ describe('serialize interface', () => {
   test('PropertySignature.type is ArrayType', () => {
     const expected = {
       name: 'MArrayType',
-      properties: {
-        stringArr: 'string[]',
-        numberArr: 'number[]',
-        children: [
-          {
+      properties: [
+        { key: 'stringArr', kind: ts.SyntaxKind.ArrayType, value: 'string' },
+        { key: 'numberArr', kind: ts.SyntaxKind.ArrayType, value: 'number' },
+        {
+          key: 'children',
+          kind: ts.SyntaxKind.ArrayType,
+          value: {
             name: 'MChild',
-            properties: { name: 'string', age: 'number' },
+            properties: [
+              { key: 'name', kind: ts.SyntaxKind.StringKeyword, value: 'string' },
+              { key: 'age', kind: ts.SyntaxKind.NumberKeyword, value: 'number' },
+            ],
           },
-        ],
-      },
+        },
+      ],
     };
 
     testSerializeInterface(interfaces, checker, 'MArrayType', expected);
@@ -101,7 +125,7 @@ describe('serialize interface', () => {
   test('PropertySignature.type is undefined', () => {
     const expected = {
       name: 'MEmpty',
-      properties: { '': '' },
+      properties: [{ key: '' }],
     };
 
     testSerializeInterface(interfaces, checker, 'MEmpty', expected);
@@ -110,9 +134,58 @@ describe('serialize interface', () => {
   test('PropertySignature.type is LiteralType', () => {
     const expected = {
       name: 'MLiteralType',
-      properties: { name: 'JserWang', age: 18 },
+      properties: [
+        { key: 'name', kind: ts.SyntaxKind.LiteralType, value: 'JserWang' },
+        { key: 'age', kind: ts.SyntaxKind.LiteralType, value: 18 },
+      ],
     };
 
     testSerializeInterface(interfaces, checker, 'MLiteralType', expected);
+  });
+
+  test('string Indexable Types', () => {
+    const expected = {
+      name: 'MStringArray',
+      properties: [{ key: INDEXABLE_TYPE, kind: ts.SyntaxKind.StringKeyword, value: 'string' }],
+    };
+    testSerializeInterface(interfaces, checker, 'MStringArray', expected);
+  });
+
+  test('number Indexable Types', () => {
+    const expected = {
+      name: 'MNumberArray',
+      properties: [{ key: INDEXABLE_TYPE, kind: ts.SyntaxKind.NumberKeyword, value: 'number' }],
+    };
+    testSerializeInterface(interfaces, checker, 'MNumberArray', expected);
+  });
+
+  test('type Indexable Types', () => {
+    const expected = {
+      name: 'MTypeArray',
+      properties: [
+        {
+          key: INDEXABLE_TYPE,
+          kind: ts.SyntaxKind.TypeReference,
+          value: {
+            name: 'MBasic',
+            properties: [
+              { key: 'name', kind: ts.SyntaxKind.StringKeyword, value: 'string' },
+              { key: 'age', kind: ts.SyntaxKind.NumberKeyword, value: 'number' },
+              { key: INDEXABLE_TYPE, kind: ts.SyntaxKind.AnyKeyword, value: 'any' },
+            ],
+          },
+        },
+      ],
+    };
+    testSerializeInterface(interfaces, checker, 'MTypeArray', expected);
+  });
+
+  test('generic Indexable Types', () => {
+    const expected = {
+      name: 'MGenericArray',
+      generics: ['T'],
+      properties: [{ key: INDEXABLE_TYPE, kind: ts.SyntaxKind.TypeReference, value: 'T' }],
+    };
+    testSerializeInterface(interfaces, checker, 'MGenericArray', expected);
   });
 });

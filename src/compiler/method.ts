@@ -2,19 +2,29 @@
  * method => block => statement => expression
  */
 import ts from 'typescript';
+import { getIdentifierText } from '../utils';
+
+export interface MethodEntry {
+  name: string;
+  expressions: ts.CallExpression[];
+}
 
 /**
  * Get all CallExpression in method
  * @param node
  */
-export const getCallExpressionsFromMethod = (node: ts.MethodDeclaration): ts.CallExpression[] => {
+export const getMethodEntry = (node: ts.MethodDeclaration): MethodEntry => {
+  const entry = {} as MethodEntry;
   const methodBody = node.body;
+
+  entry.name = ts.isIdentifier(node.name) ? getIdentifierText(node.name) : node.name.getText();
+
   if (methodBody && ts.isBlock(methodBody)) {
-    return processBlock(methodBody).filter((expression) =>
+    entry.expressions = processBlock(methodBody).filter((expression) =>
       ts.isCallExpression(expression)
     ) as ts.CallExpression[];
   }
-  return [];
+  return entry;
 };
 
 /**

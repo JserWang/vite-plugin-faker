@@ -2,6 +2,7 @@
 interface MBasic {
   name: string;
   age: number;
+  [propName: string]: any;
 }
 
 // test for extends
@@ -44,4 +45,18 @@ interface MEmpty {
 interface MLiteralType {
   name: 'JserWang';
   age: 18;
+}
+
+// test for Indexable Types
+interface MStringArray {
+  [index: number]: string;
+}
+interface MNumberArray {
+  [index: number]: number;
+}
+interface MTypeArray {
+  [index: string]: MBasic;
+}
+interface MGenericArray<T> {
+  [index: number]: T;
 }
