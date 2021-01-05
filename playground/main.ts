@@ -7,4 +7,4 @@ const mockDataResolver = new MockDataResolver({
   watchFile: true,
 });
 
-mockDataResolver.getMockData();
+mockDataResolver.getOrGenerateData();

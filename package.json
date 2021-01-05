@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-faker",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "A mock plugin for vite",
   "main": "dist/index.js",
   "files": [
@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node playground/main.ts",
     "build": "rimraf dist && rimraf es && tsc -p tsconfig.json",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "keywords": [
     "vite",
@@ -45,6 +45,6 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.1.1",
-    "vite": "^1.0.0-rc.13"
+    "vite": "^2.0.0-beta.4"
   }
 }

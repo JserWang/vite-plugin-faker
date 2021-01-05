@@ -1,13 +1,12 @@
-import type { ParameterizedContext } from 'koa';
-import type { ServerPluginContext } from 'vite';
+import type { Connect } from 'vite';
 import { MockDataResolver } from '../resolver/mockData';
 import type { MockData, Options } from '../types';
 import { eventHub, logInfo, sleep } from '../utils';
 
 let mockData: MockData[];
-const getMockData = async (opts: Options) => {
+export const getOrGenerateMockData = async (opts: Options) => {
   const mockDataResolver = new MockDataResolver(opts);
-  mockData = mockDataResolver.getMockData();
+  mockData = mockDataResolver.getOrGenerateData();
   return mockData;
 };
 
@@ -15,27 +14,25 @@ eventHub.sub('UPDATE_MOCK_DATA', (data: MockData[]) => {
   mockData = data;
 });
 
-const getTargetMockData = (url: string) => {
-  return mockData.filter((data) => data.url === url);
-};
+const getTargetMockData = (url: string | undefined) => mockData.filter((data) => data.url === url);
 
-const requestMiddleware = async (ctx: ParameterizedContext, next: any) => {
-  const targetMockData = getTargetMockData(ctx.path);
+const isGet = (method: string | undefined) => method && method.toUpperCase() === 'GET';
+
+export const requestMiddleware: Connect.NextHandleFunction = async (req, res, next) => {
+  let url = isGet(req.method) ? req.url?.split('?')[0] : req.url;
+
+  const targetMockData = getTargetMockData(url);
   if (targetMockData.length > 0) {
-    logInfo(`invoke mock proxy: ${ctx.path}`);
+    logInfo(`invoke mock proxy: ${url}`);
     const data = targetMockData[0];
     if (data.timeout) {
       await sleep(data.timeout);
     }
-    ctx.type = 'json';
-    ctx.status = data.httpCode ? data.httpCode : 200;
-    ctx.body = data.response;
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = data.httpCode ? data.httpCode : 200;
+    res.end(JSON.stringify(data.response));
     return;
   }
-  await next();
-};
 
-export default (opts: Options) => ({ app }: ServerPluginContext) => {
-  getMockData(opts);
-  app.use(requestMiddleware);
+  next();
 };

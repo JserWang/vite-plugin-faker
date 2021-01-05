@@ -35,7 +35,7 @@ export class MockDataResolver {
     this.watchRequestFile();
   }
 
-  getMockData() {
+  getOrGenerateData() {
     if (this.originMockData.length === 0) {
       const structure = this.getStructureFromFiles();
       const mockData = generateMockData(structure, new Map(), []);
