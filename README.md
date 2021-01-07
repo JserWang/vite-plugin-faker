@@ -49,15 +49,6 @@ Note: If you need to use this plugin to generate mock data, Please keep consiste
 
 - GET or POST calls a general request method, the second parameter of the general request method is the general backend return body type
 
-## 🖥️ Local development
-
-```bash
-git clone https://github.com/vue-toys/vite-plugin-faker.git
-cd vite-plugin-faker
-yarn
-yarn dev
-```
-
 ## ⚙️ Configuration items
 
 -`basePath`: The root directory to be parsed, with the project directory as the root directory

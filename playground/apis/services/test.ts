@@ -1,5 +1,4 @@
 import Request from '../../utils/Request';
-import { getTime } from '../../utils/test';
 import type { MResult } from '../models/test';
 
 class PlayGroundService {
@@ -50,10 +49,6 @@ class PlayGroundService {
     } else {
       Request.get<MResult>(this.api.withIfElse);
     }
-  }
-
-  now() {
-    return getTime();
   }
 }
 
