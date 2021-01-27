@@ -10,14 +10,14 @@ export const vitePluginFaker = (opts: Options): Plugin => {
     configResolved(resolvedConfig) {
       config = resolvedConfig;
     },
-    configureServer({ app }) {
+    configureServer({ middlewares }) {
       // serve: plugin only invoked by dev server
       if (config.command !== 'serve') {
         return;
       }
       getOrGenerateMockData(opts);
 
-      app.use(requestMiddleware);
+      middlewares.use(requestMiddleware);
     },
   };
 };

@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { join } from 'path';
 import { MockData, MockDataResolver } from 'ts-mock-generator';
 import type { Connect } from 'vite';
 import type { Options } from '../types';
@@ -7,19 +7,19 @@ import { logger } from '../utils';
 let mockData: MockData[];
 export const getOrGenerateMockData = async (opts: Options) => {
   const mockDataResolver = new MockDataResolver({
-    configPath: resolve(process.cwd(), 'tsconfig.json'),
-    basePath: resolve(process.cwd(), opts.basePath),
-    mockDir: resolve(process.cwd(), opts.basePath, 'mock'),
+    configPath: join(process.cwd(), 'tsconfig.json'),
+    basePath: join(process.cwd(), opts.basePath),
+    mockDir: join(process.cwd(), opts.basePath, 'mock'),
     includes: opts.includes || [],
   });
 
   mockData = mockDataResolver.getOrGenerateData();
 
   if (opts.watchFile) {
-    mockDataResolver.watchMockFile((data) => {
+    mockDataResolver.watchMockFile((data: MockData[]) => {
       mockData = data;
     });
-    mockDataResolver.watchRequestFile((data) => {
+    mockDataResolver.watchRequestFile((data: MockData[]) => {
       mockData = data;
     });
   }

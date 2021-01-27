@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-faker",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A mock plugin for vite",
   "main": "dist/index.js",
   "files": [
@@ -12,27 +12,28 @@
   "keywords": [
     "vite",
     "mock",
-    "hmr"
+    "hmr",
+    "vite-plugin"
   ],
   "author": "JserWang",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vue-toys/vite-plugin-faker"
+    "url": "https://github.com/JserWang/vite-plugin-faker"
   },
   "bugs": {
-    "url": "https://github.com/vue-toys/vite-plugin-faker/issues"
+    "url": "https://github.com/JserWang/vite-plugin-faker/issues"
   },
-  "homepage": "https://github.com/vue-toys/vite-plugin-faker/tree/master/#readme",
+  "homepage": "https://github.com/JserWang/vite-plugin-faker/tree/master/#readme",
   "dependencies": {
     "chalk": "^4.1.0",
-    "typescript": "^4.1.2",
+    "typescript": "^4.1.3",
     "ts-mock-generator": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.3",
     "nodemon": "^2.0.6",
     "rimraf": "^3.0.2",
-    "vite": "^2.0.0-beta.10"
+    "vite": "^2.0.0-beta.50"
   }
 }
