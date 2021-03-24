@@ -1,16 +1,14 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "moduleResolution": "node",
-    "strict": true,
-    "declaration": true,
-    "noUnusedLocals": true,
+    "module": "esnext",
+    "target": "es2019",
+    "lib": ["esnext", "DOM"],
     "esModuleInterop": true,
-    "outDir": "dist",
-    "module": "commonjs",
-    "lib": ["esnext"],
-    "sourceMap": false,
-    "noEmitOnError": true
+    "strict": true,
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
-  "include": ["./src"]
+  "exclude": ["**/dist", "**/node_modules"]
 }
