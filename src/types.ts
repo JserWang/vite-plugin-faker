@@ -4,9 +4,9 @@ export interface Options {
    */
   basePath: string;
   /**
-   * whether to generate mock file
+   *
    */
-  mockFile?: boolean;
+  mockDir?: string;
   /**
    * monitor file changes
    */

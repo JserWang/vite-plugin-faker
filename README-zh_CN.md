@@ -32,6 +32,7 @@ export default {
   plugins: {
     vitePluginFaker({
       basePath: 'src/apis',
+      mockDir: '/mock',
       includes: [/^.*Service/],
       watchFile: true,
       mockFile: true,
@@ -55,7 +56,7 @@ export default {
 
 - `watchFile`：是否监听文件变更，当为 true 时，文件发生变化时会自动更新 mock 数据
 
-- `mockFile`：是否生成 mock 文件，通常用于需要特殊返回值时设为 true
+- `mockDir`：设置 mock 文件存储位置，若不设置则不生成 mock 文件，即每次都会从内存读取。
 
 ## 📛 Mock.json 额外字段
 

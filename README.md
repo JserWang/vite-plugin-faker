@@ -35,6 +35,7 @@ export default {
   plugins: {
     vitePluginFaker({
       basePath:'src/apis',
+      mockDir:'/',
       includes: [/^.*Service/],
       watchFile: true,
       mockFile: true,
@@ -59,7 +60,7 @@ Note: If you need to use this plugin to generate mock data, Please keep consiste
 
 -`watchFile`: Whether to monitor file changes, when it is true, mock data will be automatically updated when the file changes
 
--`mockFile`: Whether to generate a mock file, usually set to true when a special return value is required
+-`mockDir`: Set the mock file storage location. If it is not set, the mock file will not be generated, that is, it will be read from the memory every time
 
 ## 📛 Mock.json extra fields
 

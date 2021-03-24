@@ -9,7 +9,7 @@ export const getOrGenerateMockData = async (opts: Options) => {
   const mockDataResolver = new MockDataResolver({
     configPath: join(process.cwd(), 'tsconfig.json'),
     basePath: join(process.cwd(), opts.basePath),
-    mockDir: join(process.cwd(), opts.basePath, 'mock'),
+    mockDir: opts.mockDir ? join(process.cwd(), opts.mockDir) : undefined,
     includes: opts.includes || [],
   });
 
