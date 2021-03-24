@@ -37,8 +37,7 @@ const sleep = (delay: number) =>
   });
 
 export const requestMiddleware: Connect.NextHandleFunction = async (req, res, next) => {
-  let url = isGet(req.method) ? req.url?.split('?')[0] : req.url;
-
+  const url = req.url?.split('?')[0];
   const targetMockData = getTargetMockData(url);
   if (targetMockData.length > 0) {
     logger.info(`invoke mock proxy: ${url}`);
