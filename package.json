@@ -30,7 +30,7 @@
   "homepage": "https://github.com/JserWang/vite-plugin-faker/tree/master/#readme",
   "dependencies": {
     "chalk": "^4.1.0",
-    "ts-mock-generator": "^1.0.4",
+    "ts-mock-generator": "^1.0.7",
     "typescript": "^4.2.3"
   },
   "devDependencies": {
