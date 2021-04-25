@@ -27,19 +27,18 @@ npm install vite-plugin-faker --save-dev
 Add configuration in `vite.config.ts`
 
 ```typescript
-import {vitePluginFaker} from'vite-plugin-faker';
-import type {UserConfig} from'vite';
+import vitePluginFaker from 'vite-plugin-faker';
+import type { UserConfig } from 'vite';
 
 
 export default {
   plugins: {
     vitePluginFaker({
-      basePath:'src/apis',
-      mockDir:'/',
-      includes: [/^.*Service/],
-      watchFile: true,
-      mockFile: true,
-    });
+      basePath: 'src/apis',
+      mockDir: '/mock',
+      includes: [/^.Service/],
+      watchFile: true
+    })
   }
 } as UserConfig;
 ```
