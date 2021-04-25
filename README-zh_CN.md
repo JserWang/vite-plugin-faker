@@ -25,10 +25,10 @@ npm install vite-plugin-faker --save-dev
 
 ```typescript
 import vitePluginFaker from 'vite-plugin-faker';
-import type { UserConfig } from 'vite';
+import { defineConfig } from 'vite';
 
-
-export default {
+// https://vitejs.dev/config/
+export default defineConfig({
   plugins: {
     vitePluginFaker({
       basePath: 'src/apis',
@@ -37,7 +37,7 @@ export default {
       watchFile: true
     })
   }
-} as UserConfig;
+});
 ```
 
 注意：若需要使用插件生成 Mock 数据，请保持与 playground 中的[Request](https://github.com/vue-toys/vite-plugin-faker/blob/main/playground/utils/Request.ts)结构一致，或满足以下两点即可：

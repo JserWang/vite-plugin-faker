@@ -28,10 +28,10 @@ Add configuration in `vite.config.ts`
 
 ```typescript
 import vitePluginFaker from 'vite-plugin-faker';
-import type { UserConfig } from 'vite';
+import { defineConfig } from 'vite';
 
-
-export default {
+// https://vitejs.dev/config/
+export default defineConfig({
   plugins: {
     vitePluginFaker({
       basePath: 'src/apis',
@@ -40,7 +40,7 @@ export default {
       watchFile: true
     })
   }
-} as UserConfig;
+});
 ```
 
 Note: If you need to use this plugin to generate mock data, Please keep consistent with the requsest structure of the [playground](https://github.com/vue-toys/vite-plugin-faker/blob/main/playground/utils/Request.ts). Or the following two points are satisfied:
