@@ -2,37 +2,37 @@ export interface Options {
   /**
    * basic path
    */
-  basePath: string;
+  basePath: string
   /**
    *
    */
-  mockDir?: string;
+  mockDir?: string
   /**
    * monitor file changes
    */
-  watchFile?: boolean;
+  watchFile?: boolean
   /**
    * rules for parsing class names
    */
-  includes?: RegExp | RegExp[];
+  includes?: RegExp | RegExp[]
   /**
    * exclusion rules for parsing class names
    */
-  excludes?: RegExp | RegExp[];
+  excludes?: RegExp | RegExp[]
 }
 
 export interface MockData {
-  url: string;
+  url: string
   /**
    * http status code
    */
-  httpCode?: number;
+  httpCode?: number
   /**
    * delay time
    */
-  timeout?: number;
+  timeout?: number
   /**
    * response body
    */
-  response: Record<string, any>;
+  response: Record<string, any>
 }
