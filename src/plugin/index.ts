@@ -25,7 +25,7 @@ export const getOrGenerateMockData = async(opts: Options) => {
   }
 }
 
-const getTargetMockData = (url: string | undefined) => mockData.filter(data => data.url === url)
+const getTargetMockData = (url: string | undefined) => mockData.find(data => data.url === url)
 
 const sleep = (delay: number) =>
   new Promise((resolve) => {
@@ -37,15 +37,14 @@ const sleep = (delay: number) =>
 export const requestMiddleware: Connect.NextHandleFunction = async(req, res, next) => {
   const url = req.url?.split('?')[0]
   const targetMockData = getTargetMockData(url)
-  if (targetMockData.length > 0) {
+  if (targetMockData) {
     logger.info(`invoke mock proxy: ${url}`)
-    const [data] = targetMockData
-    if (data.timeout) {
-      await sleep(data.timeout)
+    if (targetMockData.timeout) {
+      await sleep(targetMockData.timeout)
     }
     res.setHeader('Content-Type', 'application/json')
-    res.statusCode = data.httpCode ? data.httpCode : 200
-    res.end(JSON.stringify(data.response))
+    res.statusCode = targetMockData.httpCode ? targetMockData.httpCode : 200
+    res.end(JSON.stringify(targetMockData.response))
     return
   }
 
